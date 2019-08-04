@@ -1,0 +1,87 @@
+ public void imuTurn (  double speed, double angle) {
+
+        // keep looping while we are still active, and not on heading.
+        while (opModeIsActive() && !onHeading(speed, angle, 0.1)) {
+            // Update telemetry & Allow time for other processes to run.
+
+            telemetry.addData("DD",heading);
+            telemetry.update();
+        }
+
+    }
+
+    public void imuTurn2 (  double speed, double angle) {
+
+        // keep looping while we are still active, and not on heading.
+        while (opModeIsActive() && !onHeadingNegative(speed, angle, 0.1)) {
+            // Update telemetry & Allow time for other processes to run.
+
+            telemetry.addData("DD",heading);
+            telemetry.update();
+        }
+
+    }
+
+    boolean onHeading(double speed, double angle, double PCoeff) {
+
+        double   error ;
+        double   steer ;
+        boolean  onTarget = false ;
+        double leftSpeed;
+        double rightSpeed;
+
+        returnAngles();
+
+        motorL.setPower(speed);
+        motorR.setPower(-speed);
+
+        if(heading > angle){
+            onTarget = true;
+        }
+
+        return onTarget;
+    }
+
+    boolean onHeadingNegative(double speed, double angle, double PCoeff) {
+
+        double   error ;
+        double   steer ;
+        boolean  onTarget = false ;
+        double leftSpeed;
+        double rightSpeed;
+
+        returnAngles();
+
+        motorL.setPower(-speed);
+        motorR.setPower(speed);
+
+        if(heading < angle){
+            onTarget = true;
+        }
+
+        return onTarget;
+    }
+
+    static String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    static String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    public static void returnAngles(){
+        //starting IMU
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //return necessary angle
+        heading = Double.parseDouble(formatAngle(angles.angleUnit, angles.firstAngle));
+    }
+
+    public void imuSetUp() {
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+    }

@@ -1,0 +1,64 @@
+//All teleop components
+
+    private ElapsedTime runtime = new ElapsedTime();
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
+    private DcMotor sideSlide = null;
+    private DcMotor upSlide = null;
+    private CRServo intakeWheel = null;
+    private double leftPower;
+    private double rightPower;
+
+
+//Teleop Hardware maps
+
+    leftDrive  = hardwareMap.get(DcMotor.class, "MotorLeft");
+    rightDrive = hardwareMap.get(DcMotor.class, "MotorRight");
+
+    sideSlide = hardwareMap.get(DcMotor.class, "sideSlide");
+    upSlide = hardwareMap.get(DcMotor.class, "verSlide");
+
+    intakeWheel = hardwareMap.get(CRServo.class, "crServo");
+
+    leftDrive.setDirection(DcMotor.Direction.REVERSE);
+    rightDrive.setDirection(DcMotor.Direction.FORWARD);
+    sideSlide.setDirection(DcMotor.Direction.REVERSE);
+    upSlide.setDirection(DcMotor.Direction.REVERSE);
+    intakeWheel.setDirection(DcMotor.Direction.FORWARD);
+
+
+//All Auto components
+
+
+        DcMotor motorL;
+        DcMotor motorR;
+        static BNO055IMU imu;
+        public static double inchesPerRot = (228) / (5.5 * Math.PI);
+        public static double target;
+        public static int tarPosL;
+        public static int tarPosR;
+        static Orientation angles;
+        static double heading = 0.0;
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        public static AutoCVAlgorithm c1= new AutoCVAlgorithm();
+        public static int xCor;
+        public static int yCor;
+        public static int branchPath;
+
+
+//Auto Hardware Maps
+
+
+        motorL = hardwareMap.dcMotor.get("MotorLeft");
+        motorR = hardwareMap.dcMotor.get("MotorRight");
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        motorL.setDirection(DcMotorSimple.Direction.REVERSE);
+        imuSetUp();
+        imu.initialize(parameters);
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+
+        waitForStart();
+
+        c1.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+        c1.setShowCountours(false);
+        c1.enable();
